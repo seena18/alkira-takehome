@@ -1,16 +1,20 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import App from './App.tsx'
+import { AuthProvider } from './features/auth/AuthProvider.tsx'
 
 /**
- * Mounting <App /> inside a MemoryRouter is only possible because <BrowserRouter>
- * lives in main.tsx. That is what lets these tests start at any URL.
+ * Mounting <App /> inside a MemoryRouter is only possible because the real
+ * providers live in main.tsx. That is what lets these tests start at any URL
+ * with a fresh, anonymous auth state.
  */
 function renderAt(path: string) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>,
+    <AuthProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <App />
+      </MemoryRouter>
+    </AuthProvider>,
   )
 }
 

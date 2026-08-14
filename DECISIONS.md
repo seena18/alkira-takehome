@@ -185,6 +185,42 @@ that: state lives exactly as long as the tab does.
 
 ---
 
+## The login form
+
+### Error timing: silent, then on blur, then live
+
+A field says nothing while it is being typed into for the first time, validates
+when it is left (`mode: 'onTouched'`), and once it has erred, re-validates on
+every keystroke so the message disappears the moment the input is fixed. Submit
+validates everything and moves focus to the first invalid field.
+
+- **Rejected — validate from the first keystroke:** yells at the user before
+  they have finished typing.
+- **Rejected — validate only on submit:** cheapest to build, slowest feedback
+  loop of the three.
+
+### Native browser validation is disabled
+
+The form sets `noValidate`. With `type="email"`, the browser would otherwise
+show its own tooltip before the schema ever runs — two competing styles of
+error message on one field.
+
+### Credential failure is one form-level message
+
+"Invalid email or password", rendered in a `role="alert"` region so it is
+announced, never attached to either field. The auth API returns the same `null`
+for a wrong email and a wrong password precisely so the UI cannot know — and
+therefore cannot leak — which half was wrong.
+
+### Form tests mount the whole app
+
+`LoginPage.test.tsx` renders `<App />` at `/login` instead of the page in
+isolation, so success is asserted the way a user experiences it: the URL moves
+on and the MFA screen appears. Testing "dispatch was called with the right
+action" would pass even if the routing were broken.
+
+---
+
 ## Styling details
 
 ### The token layer is deferred until there is UI to design against
