@@ -1,0 +1,28 @@
+import { verifyCredentials } from './auth-api.ts'
+
+describe('verifyCredentials', () => {
+  it('resolves the user for valid credentials', async () => {
+    const user = await verifyCredentials('viewer@example.com', 'Alkira123!')
+    expect(user).toMatchObject({ email: 'viewer@example.com', role: 'viewer' })
+  })
+
+  it('is case-insensitive and whitespace-tolerant on email', async () => {
+    const user = await verifyCredentials('  Viewer@Example.COM ', 'Alkira123!')
+    expect(user?.role).toBe('viewer')
+  })
+
+  it('rejects a wrong password', async () => {
+    expect(await verifyCredentials('viewer@example.com', 'wrong')).toBeNull()
+  })
+
+  it('rejects an unknown email', async () => {
+    expect(await verifyCredentials('ghost@example.com', 'Alkira123!')).toBeNull()
+  })
+
+  // The session object is what ends up in React state and devtools; this pins
+  // the guarantee that a password can never travel with it.
+  it('never leaks the password on the returned user', async () => {
+    const user = await verifyCredentials('editor@example.com', 'Alkira123!')
+    expect(user).not.toHaveProperty('password')
+  })
+})
