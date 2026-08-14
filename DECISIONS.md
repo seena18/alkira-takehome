@@ -134,6 +134,57 @@ of the back button.
 
 ---
 
+## Auth state
+
+### A three-state machine, not a bag of flags
+
+```ts
+type AuthState =
+  | { status: 'anonymous' }
+  | { status: 'awaitingMfa'; user: User }
+  | { status: 'authenticated'; user: User }
+```
+
+`user` does not exist on `anonymous`, so with `strict` on, reading a user the
+flow has not earned is a compile error, not a runtime crash. The alternative —
+`user: User | null` plus an `mfaDone` boolean — can represent four states, one
+of which (no user, MFA "done") is nonsense that every consumer would have to
+remember never to create.
+
+The reducer is pure and defends its transitions: `MFA_VERIFIED` from any state
+but `awaitingMfa` returns the state unchanged, so no sequence of dispatches can
+skip the password step. Being pure, that rule is pinned by plain unit tests with
+no React involved (`authReducer.test.ts`).
+
+- **Rejected — async logic in the provider:** the context exposes `state` and
+  `dispatch` only. The async work (calling the auth API, pending and failure UX)
+  belongs to the form that triggers it; action-creator indirection for three
+  transitions buys nothing.
+- **Cost:** two files and a custom hook where a `useState` would superficially
+  do. The compile-time guarantee is what the cost buys.
+
+### Why not Redux
+
+The design above *is* Redux minus the store: a pure reducer over a typed action
+union, tested in isolation. What Redux adds — a global store, middleware,
+devtools, selectors across many slices — solves coordination between many
+independent writers, and this app has one writer (the auth flow) and three
+transitions. Adopting it here would be dependency without a problem to spend it
+on. If the app grew more state domains with cross-cutting writers, the migration
+is mechanical: `configureStore({ reducer: { auth: authReducer } })` and the
+reducer file moves unchanged — nothing about the current shape would need
+rethinking, because it is already reducer-shaped.
+
+### Auth state is in memory only — refresh logs you out
+
+Deliberate, not an omission. The half-authenticated `awaitingMfa` state has no
+business surviving a reload, and persisting any auth state in localStorage would
+imitate a session guarantee a client cannot make. A real implementation holds a
+short-lived MFA-pending token server-side; this one keeps the honest version of
+that: state lives exactly as long as the tab does.
+
+---
+
 ## Styling details
 
 ### The token layer is deferred until there is UI to design against
