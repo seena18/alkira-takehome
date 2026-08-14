@@ -11,7 +11,7 @@ as it happens, not reconstructed afterwards.
 | # | Slice | Scope | Status |
 |---|-------|-------|--------|
 | 1 | Scaffold + routing | Vite/TS setup, routing table, test harness | ✅ |
-| 2 | Mock users + roles | Role/User types, mock backend, permission checks | ☐ |
+| 2 | Mock users + roles | Role/User types, mock backend, permission checks | ✅ |
 | 3 | Login form | Email + password with validation and error timing | ☐ |
 | 4 | MFA step | Mock OTP; the state machine around it is the real work | ☐ |
 | 5 | Route guards | Protect by auth state, including the half-authenticated one | ☐ |
