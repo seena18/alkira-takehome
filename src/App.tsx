@@ -1,13 +1,16 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './features/auth/LoginPage.tsx'
 import MfaPage from './features/auth/MfaPage.tsx'
+import ProtectedRoute from './features/auth/ProtectedRoute.tsx'
 import SignUpPage from './features/auth/SignUpPage.tsx'
 import ConnectorsPage from './features/connectors/ConnectorsPage.tsx'
 
 /**
  * The routing table is the map of the app. Every state of the auth flow has its
  * own URL — including the MFA step — so each is independently linkable,
- * testable, and guardable.
+ * testable, and guardable. Everything nested under <ProtectedRoute> requires a
+ * finished login by position; this table is the one place to audit what is
+ * protected.
  */
 export default function App() {
   return (
@@ -16,9 +19,9 @@ export default function App() {
       <Route path="/mfa" element={<MfaPage />} />
       <Route path="/signup" element={<SignUpPage />} />
 
-      {/* Deliberately unguarded until slice 5, where these move under a
-          <ProtectedRoute> element. There is no auth state to guard on yet. */}
-      <Route path="/connectors" element={<ConnectorsPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/connectors" element={<ConnectorsPage />} />
+      </Route>
 
       {/* The only public surface is auth, so an unknown URL is best answered
           with the sign-in screen. `replace` keeps it out of the back button. */}
