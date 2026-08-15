@@ -83,6 +83,21 @@ describe('ConnectorsPage', () => {
     expect(screen.queryByText('should-not-stick')).not.toBeInTheDocument()
   })
 
+  // Creation is hidden, not disabled — the deliberate exception. queryBy (not
+  // getBy) because asserting absence is the point.
+  it('does not render the add button for the read-only role', () => {
+    renderAs(viewer)
+    expect(screen.queryByRole('button', { name: /add connector/i })).not.toBeInTheDocument()
+  })
+
+  it('lets an editor add a connector', async () => {
+    const user = userEvent.setup()
+    renderAs(editor)
+
+    await user.click(screen.getByRole('button', { name: /add connector/i }))
+    expect(screen.getByText('new-connector-1')).toBeInTheDocument()
+  })
+
   it('signing out returns to the login screen', async () => {
     const user = userEvent.setup()
     renderAs(viewer)

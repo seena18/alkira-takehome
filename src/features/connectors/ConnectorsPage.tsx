@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAuth } from '../../features/auth/authContext.ts'
 import { can } from '../../lib/permissions.ts'
@@ -20,14 +20,31 @@ export default function ConnectorsPage() {
   const { state, dispatch } = useAuth()
   const [connectors, setConnectors] = useState(SEED_CONNECTORS)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const nextId = useRef(1)
 
   // Unreachable behind <ProtectedRoute>; the narrow is for the compiler, and
   // rendering nothing beats pretending this state has a UI.
   if (state.status !== 'authenticated') return null
   const { user } = state
 
+  const canCreate = can(user, 'connector:create')
   const canEdit = can(user, 'connector:edit')
   const canDelete = can(user, 'connector:delete')
+
+  function add() {
+    const n = nextId.current++
+    setConnectors((current) => [
+      ...current,
+      {
+        id: `new-${n}`,
+        name: `new-connector-${n}`,
+        cloud: 'AWS',
+        region: 'us-west-2',
+        cidr: `10.${100 + n}.0.0/16`,
+        status: 'up',
+      },
+    ])
+  }
 
   function remove(id: string) {
     setConnectors((current) => current.filter((c) => c.id !== id))
@@ -54,6 +71,17 @@ export default function ConnectorsPage() {
         <button type="button" onClick={() => dispatch({ type: 'LOGOUT' })}>
           Sign out
         </button>
+
+        {/* Hidden without the capability, not disabled — the one deliberate
+            exception to the disable-don't-hide rule. Row actions communicate a
+            boundary on things the viewer can see; creation is a workflow they
+            do not have, and a permanently dead primary button would read as
+            broken rather than gated. Both patterns shown on one screen. */}
+        {canCreate && (
+          <button type="button" onClick={add}>
+            + Add connector
+          </button>
+        )}
       </header>
 
       <table>
