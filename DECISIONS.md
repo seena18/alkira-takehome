@@ -290,6 +290,40 @@ interruption), not to `/login` to start over.
 
 ---
 
+## The protected screen
+
+### Edit actions are disabled for read-only users, not hidden
+
+Disabling communicates "this capability exists; your role lacks it" — the
+boundary between the two roles stays visible on the screen itself, and a
+"Read-only access" line in the header says the same thing in words, for
+everyone, including screen-reader users who will not tab onto disabled buttons.
+
+Hiding is the right call for features that should be *secret*. A permission
+boundary the user is meant to understand is the opposite of a secret.
+
+### The UI asks capabilities, never roles
+
+`can(user, 'connector:edit')` appears in exactly two expressions; no JSX ever
+inspects `user.role`. Even the access badge derives from the capability answer,
+so if policy changes in `lib/permissions.ts`, this screen is already correct.
+
+### Actions mutate component state, not a fake backend
+
+Delete removes the row; Edit renames inline (plain controlled state — a
+one-field rename does not need the form library). Changes live and die with the
+tab, like everything else here. A read/write role whose buttons did nothing
+would demo identically to read-only; one that "persisted" to localStorage would
+pretend to a durability the app does not have.
+
+### The unreachable state renders nothing
+
+The guard means the screen can never mount unauthenticated, but the type system
+cannot know that. The narrow at the top returns `null` — honest about being
+unreachable, and the compiler gets the `user` it needs.
+
+---
+
 ## Styling details
 
 ### The token layer is deferred until there is UI to design against
