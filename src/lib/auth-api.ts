@@ -39,6 +39,22 @@ const LATENCY_MS = import.meta.env.MODE === 'test' ? 0 : 400
 const delay = () => new Promise((resolve) => setTimeout(resolve, LATENCY_MS))
 
 /**
+ * The one MFA code the mock backend accepts. Exported so the on-screen demo
+ * hint renders the same constant the check uses — they cannot drift apart.
+ */
+export const DEMO_OTP_CODE = '123456'
+
+/**
+ * Second factor of the mock flow. A real implementation would rate-limit,
+ * expire the code, and tie it to the pending session server-side; here the
+ * seam is what matters — swapping this for a real call changes no caller.
+ */
+export async function verifyMfaCode(code: string): Promise<boolean> {
+  await delay()
+  return code === DEMO_OTP_CODE
+}
+
+/**
  * Checks credentials against the store. Email matching is case-insensitive and
  * whitespace-tolerant; password matching is exact. Resolves with the public
  * User (no password) or null — it never throws, so callers have exactly two

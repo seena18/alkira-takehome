@@ -212,12 +212,56 @@ announced, never attached to either field. The auth API returns the same `null`
 for a wrong email and a wrong password precisely so the UI cannot know — and
 therefore cannot leak — which half was wrong.
 
+### Tests can seed auth state through the provider
+
+`AuthProvider` accepts an optional `initialState`, used only by tests to mount
+the tree mid-flow — at `/mfa` with a login already pending, say — instead of
+click-driving every test through the whole preceding flow. The app itself never
+passes it; production always starts anonymous.
+
 ### Form tests mount the whole app
 
 `LoginPage.test.tsx` renders `<App />` at `/login` instead of the page in
 isolation, so success is asserted the way a user experiences it: the URL moves
 on and the MFA screen appears. Testing "dispatch was called with the right
 action" would pass even if the routing were broken.
+
+---
+
+## The MFA step
+
+### The screen defends itself from both directions
+
+Anonymous visitors at `/mfa` have nothing to verify and are sent back to login;
+already-authenticated ones are done and sent forward to connectors. Only the
+`awaitingMfa` state renders a form. Both redirects are declarative
+(`<Navigate replace>`), so no hook ever runs against a state it was not written
+for.
+
+"Use a different account" only dispatches `LOGOUT` — no navigation call. State
+returns to anonymous and the redirect at the top of the component does the rest:
+the router follows the state machine, never the other way around.
+
+### One code input, not six boxes
+
+The six-box OTP input is a focus-management minefield — paste, backspace, and
+screen readers all need special-casing — for purely visual payoff. One input
+with `inputMode="numeric"` and `autoComplete="one-time-code"` is what browsers
+autofill real OTPs into.
+
+### Same form idiom as login
+
+One field does not need react-hook-form, but a second form pattern in the same
+app is a cost with no payoff: same schema-as-source-of-truth, same error
+timing, same `role="alert"` for the backend's verdict. Format ("that is not six
+digits") is checked client-side; correctness is the backend's question.
+
+### The demo hint is on screen
+
+The MFA screen prints the accepted code, rendered from the same constant the
+mock backend checks against, so the two cannot drift. A mock second factor
+secures nothing — hiding its code would only make the app tedious to explore,
+while pretending to a security property it does not have.
 
 ---
 
