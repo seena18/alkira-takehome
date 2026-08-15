@@ -265,6 +265,31 @@ while pretending to a security property it does not have.
 
 ---
 
+## The route guard
+
+### Protection is positional
+
+`<ProtectedRoute>` wraps a route group in `App.tsx`; anything nested inside is
+guarded because of where it sits, not because someone remembered a check. The
+routing table stays the single place to audit what is protected, and the guard
+blocks *mount* — no protected component ever renders, and no effect ever fires,
+in an unauthorized state.
+
+### The guard demands `authenticated`, not "a user exists"
+
+`awaitingMfa` has a user — one that has not finished proving who they are. A
+guard written as `if (user)` waves that state through, which is precisely the
+bug the three-state machine exists to prevent. Half-done visitors are sent to
+`/mfa` to resume (their password was correct; discarding it would punish the
+interruption), not to `/login` to start over.
+
+- **Rejected — remembering the intended destination** (the location-state
+  `from` pattern): with exactly one protected destination, its behaviour is
+  identical to the hardcoded flow. It earns its complexity the moment a second
+  protected page exists, and the guard's comment says so.
+
+---
+
 ## Styling details
 
 ### The token layer is deferred until there is UI to design against

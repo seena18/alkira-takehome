@@ -42,11 +42,11 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { name: /create an account/i })).toBeInTheDocument()
   })
 
-  // Pins the current, deliberately unguarded behaviour. When <ProtectedRoute>
-  // lands, this test must flip to "redirects to login" — making that change
-  // visible in the diff is the point of having it now.
-  it('renders the connectors screen at its own URL (unguarded for now)', () => {
+  // The flip this test existed for: /connectors is now guarded, and an
+  // anonymous visitor lands on the sign-in screen. The guard's full three-state
+  // behaviour lives in ProtectedRoute.test.tsx.
+  it('sends an anonymous visitor at /connectors to the login screen', () => {
     renderAt('/connectors')
-    expect(screen.getByRole('heading', { name: /connectors/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument()
   })
 })
