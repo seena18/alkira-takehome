@@ -3,11 +3,68 @@
 /**
  * Tailwind v4 is configured here in CSS — there is no tailwind.config.js.
  *
- * The design tokens (an @theme block) are deliberately absent for now: a palette
- * picked with nothing on screen to check it against is a guess. They arrive with
- * the login form, designed against real UI. The intended approach — tokens named
- * by role, dark mode by variable override — is recorded in DECISIONS.md.
+ * Every value below comes from docs/alkira-ui-branding-spec.md; none are
+ * invented. Tokens are named by the role a colour plays (surface, muted,
+ * danger), never by its value, so utilities read as intent: bg-canvas,
+ * text-muted, border-line. Single light theme — the brand spec defines one
+ * look, and deriving an unsanctioned dark palette would be guesswork. If a
+ * dark theme ever gets specified, redefining these variables under a media
+ * query re-themes the app without touching a component.
  */
+@theme {
+  /* Brand (spec §3) */
+  --color-brand: #2b56f0;
+  --color-brand-hover: #2349d7;
+  --color-brand-active: #1d3fbd;
+  --color-brand-soft: #eef3ff;
+  --color-brand-soft-line: #d9e3ff;
+  --color-navy: #071b33;
+  --color-navy-hover: #102943;
+  --color-lime: #e2ef83;
+
+  /* Neutrals (spec §3) */
+  --color-canvas: #f6f8fc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-ink: #1f2937;
+  --color-ink-strong: #111827;
+  --color-muted: #667085;
+  --color-subtle: #98a2b3;
+  --color-label: #344054;
+  --color-line: #dde4ee;
+  --color-line-strong: #c8d1dc;
+  --color-line-soft: #edf1f5;
+  --color-row-hover: #fafbfd;
+
+  /* Semantic (spec §3) */
+  --color-success: #188038;
+  --color-success-soft: #ecf8ef;
+  --color-success-line: #c7e8ce;
+  --color-warning: #b54708;
+  --color-warning-soft: #fff6e8;
+  --color-danger: #d92d20;
+  --color-danger-soft: #fff0ee;
+  --color-danger-line: #f5c2bd;
+
+  /* Type (spec §4) */
+  --font-sans: 'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Shape (spec §6) */
+  --radius-control: 6px;
+  --radius-card: 8px;
+  --radius-modal: 10px;
+
+  /* Shadows (spec §7) */
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 4%);
+  --shadow-modal: 0 12px 32px rgb(16 24 40 / 12%);
+
+  /* Focus rings (spec §15, §25) */
+  --ring-brand: 0 0 0 3px rgb(43 86 240 / 14%);
+  --ring-danger: 0 0 0 3px rgb(217 45 32 / 10%);
+
+  /* Motion (spec §26) */
+  --ease-control: 140ms ease;
+}
 
 @layer base {
   html,
@@ -17,14 +74,151 @@
   }
 
   body {
-    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px; /* spec §4: body 14/21, compact and operational */
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Never remove focus outlines — restyle them. A keyboard user has to be able
-     to complete the login → MFA → connectors flow. */
+  /* Every interactive element keeps a visible focus state (spec §25). */
   :focus-visible {
-    outline: 2px solid currentcolor;
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: var(--ring-brand);
+  }
+}
+
+@layer components {
+  /* Form controls (spec §15) */
+  .field-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-label);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .field-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    font-size: 14px;
+    color: var(--color-ink);
+    transition:
+      border-color var(--ease-control),
+      box-shadow var(--ease-control);
+  }
+
+  .field-input::placeholder {
+    color: var(--color-subtle);
+  }
+
+  .field-input:focus-visible {
+    border-color: var(--color-brand);
+    box-shadow: var(--ring-brand);
+  }
+
+  .field-input[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+
+  .field-input[aria-invalid='true']:focus-visible {
+    box-shadow: var(--ring-danger);
+  }
+
+  .field-error {
+    margin-top: 6px;
+    color: var(--color-danger);
+    font-size: 13px;
+  }
+
+  /* Buttons (spec §14) */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: var(--radius-control);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    cursor: pointer;
+    transition:
+      background-color var(--ease-control),
+      border-color var(--ease-control),
+      box-shadow var(--ease-control);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--color-brand);
+    color: #ffffff;
+    border: 1px solid var(--color-brand);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-brand-hover);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background: var(--color-brand-active);
+  }
+
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-label);
+    border: 1px solid var(--color-line-strong);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--color-surface-alt);
+  }
+
+  /* Compact table-row variant */
+  .btn-sm {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  /* Badges (spec §20) */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* Alerts (spec §21) */
+  .alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-card);
+    font-size: 13px;
+  }
+
+  .alert-info {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-soft-line);
+    color: var(--color-label);
+  }
+
+  .alert-error {
+    background: var(--color-danger-soft);
+    border: 1px solid var(--color-danger-line);
+    color: var(--color-danger);
   }
 }
