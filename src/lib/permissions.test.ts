@@ -6,11 +6,12 @@ const editor: User = { email: 'e@example.com', name: 'E', role: 'editor' }
 
 /**
  * This table is the access-control contract of the app, written out in full —
- * 2 roles × 3 capabilities. If policy changes, this test is the reviewable diff.
+ * 2 roles × 4 capabilities. If policy changes, this test is the reviewable diff.
  */
 describe('can', () => {
   it.each([
     ['connector:view', true],
+    ['connector:create', false],
     ['connector:edit', false],
     ['connector:delete', false],
   ] as const)('viewer %s -> %s', (capability, allowed) => {
@@ -19,6 +20,7 @@ describe('can', () => {
 
   it.each([
     ['connector:view', true],
+    ['connector:create', true],
     ['connector:edit', true],
     ['connector:delete', true],
   ] as const)('editor %s -> %s', (capability, allowed) => {

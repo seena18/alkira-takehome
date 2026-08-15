@@ -4,7 +4,11 @@ import type { Role, User } from './types.ts'
  * Everything a user can be allowed to do, named as resource:action. Adding a
  * feature means adding capabilities here first — the vocabulary is the API.
  */
-export type Capability = 'connector:view' | 'connector:edit' | 'connector:delete'
+export type Capability =
+  | 'connector:view'
+  | 'connector:create'
+  | 'connector:edit'
+  | 'connector:delete'
 
 /**
  * The single place policy lives. `Record<Role, …>` means adding a Role without
@@ -12,7 +16,12 @@ export type Capability = 'connector:view' | 'connector:edit' | 'connector:delete
  */
 const PERMISSIONS: Record<Role, ReadonlySet<Capability>> = {
   viewer: new Set<Capability>(['connector:view']),
-  editor: new Set<Capability>(['connector:view', 'connector:edit', 'connector:delete']),
+  editor: new Set<Capability>([
+    'connector:view',
+    'connector:create',
+    'connector:edit',
+    'connector:delete',
+  ]),
 }
 
 /**
