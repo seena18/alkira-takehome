@@ -29,11 +29,12 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument()
   })
 
-  it('renders the MFA screen at its own URL', () => {
+  // The MFA screen guards itself: with no pending login there is nothing to
+  // verify, so an anonymous visit lands on the sign-in screen. The screen's
+  // full behaviour lives in MfaPage.test.tsx.
+  it('sends an anonymous visitor at /mfa to the login screen', () => {
     renderAt('/mfa')
-    expect(
-      screen.getByRole('heading', { name: /two-factor authentication/i }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument()
   })
 
   it('renders the sign-up screen at its own URL', () => {
