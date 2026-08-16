@@ -1,4 +1,4 @@
-import { verifyCredentials } from './auth-api.ts'
+import { verifyCredentials, verifyMfaCode } from './auth-api.ts'
 
 describe('verifyCredentials', () => {
   it('resolves the user for valid credentials', async () => {
@@ -24,5 +24,17 @@ describe('verifyCredentials', () => {
   it('never leaks the password on the returned user', async () => {
     const user = await verifyCredentials('editor@example.com', 'Alkira123!')
     expect(user).not.toHaveProperty('password')
+  })
+})
+
+describe('verifyMfaCode', () => {
+  // The literal, not the exported constant: this test freezes the value the
+  // README and demo hint promise.
+  it('accepts the demo code', async () => {
+    expect(await verifyMfaCode('123456')).toBe(true)
+  })
+
+  it('rejects any other code', async () => {
+    expect(await verifyMfaCode('654321')).toBe(false)
   })
 })

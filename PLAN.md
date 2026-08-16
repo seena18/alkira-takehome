@@ -22,7 +22,7 @@ the deadline, and after the markup it styles exists.
 | 5 | Route guards | Protect by auth state, including the half-authenticated one | ✅ |
 | 6 | Protected screen | Connector list; edit actions gated by capability | ✅ |
 | 7 | Visual pass | Design tokens, shared layout, styling for every screen | ✅ |
-| 8 | Test pass | Fill gaps: full flow, guard edges, role matrix | ☐ |
+| 8 | Test pass | Fill gaps: full flow, guard edges, role matrix | ✅ |
 | 9 | README + demo | Setup, credentials, decisions, limitations, recording | ☐ |
 
 Principles fixed up front:

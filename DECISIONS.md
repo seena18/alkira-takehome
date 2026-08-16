@@ -219,6 +219,24 @@ the tree mid-flow — at `/mfa` with a login already pending, say — instead of
 click-driving every test through the whole preceding flow. The app itself never
 passes it; production always starts anonymous.
 
+### Two journey tests compose what everything else isolates
+
+`src/flow.test.tsx` drives both roles from the login screen to the connectors
+table with nothing seeded — one journey logs in as `"  Viewer@Example.COM  "`
+so the schema normalization and the API's case-insensitive match are exercised
+through the real stack rather than in isolation. Screen and unit tests prove
+each piece; these two prove the state the login form dispatches is the state
+the MFA screen accepts is the state the route guard demands. They are also the
+demo script in executable form.
+
+### Deliberately not tested
+
+No snapshot tests: they assert markup accidents, fail on every visual change,
+and catch nothing behavioural. No coverage threshold: the metric invites tests
+of trivia to move a number. No per-component render smoke tests: the journey
+tests mount everything that matters. The suite asserts behaviour and ARIA
+state — what a user or a screen reader would experience — and nothing else.
+
 ### Form tests mount the whole app
 
 `LoginPage.test.tsx` renders `<App />` at `/login` instead of the page in
