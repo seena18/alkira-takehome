@@ -59,6 +59,8 @@ nothing, so hiding its code would only make the app tedious to explore.
    leak which half was wrong.
 3. Sign in as either account (email is case- and whitespace-insensitive). You
    land on `/mfa`, which knows who is pending and offers an escape hatch.
+
+   ![MFA screen](docs/screenshots/mfa.png)
 4. Enter the code. As **viewer**: a read-only banner, no Add button, Edit/Delete
    visible but disabled with a tooltip. As **editor**: add, inline-rename, and
    delete all work against in-memory state.
