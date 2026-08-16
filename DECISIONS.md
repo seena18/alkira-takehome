@@ -302,6 +302,15 @@ everyone, including screen-reader users who will not tab onto disabled buttons.
 Hiding is the right call for features that should be *secret*. A permission
 boundary the user is meant to understand is the opposite of a secret.
 
+### Creation is hidden — the deliberate exception
+
+The "+ Add connector" button does not render without the `connector:create`
+capability, while row actions stay visible-but-disabled. The distinction: row
+actions communicate a boundary on things the viewer can already see, and a
+disabled Edit next to a row explains itself. Creation is a workflow the viewer
+does not have at all — a permanently dead primary button reads as broken, not
+gated. One screen demonstrates both patterns, each where it belongs.
+
 ### The UI asks capabilities, never roles
 
 `can(user, 'connector:edit')` appears in exactly two expressions; no JSX ever
@@ -326,32 +335,52 @@ unreachable, and the compiler gets the `user` it needs.
 
 ## Styling details
 
-### The token layer is deferred until there is UI to design against
+### Every token value comes from the brand spec
 
-Tailwind is wired up, but `src/index.css` carries no `@theme` block yet. An
-earlier attempt defined a full palette before a single form existed; every value
-in it was a guess, since there was nothing on screen to judge contrast or
-hierarchy against. It was removed rather than kept as decoration.
-
-The two decisions below are the *intended* approach, and are applied when the
-login form is built.
+The `@theme` block in `src/index.css` implements
+`docs/alkira-ui-branding-spec.md`; no colour, radius, or shadow is invented.
+The token layer was deliberately left empty until the spec existed — an early
+attempt at a palette, guessed before a single form was on screen, was removed
+rather than kept as decoration. Styling landed as one pass over the finished
+app (slice 7 in PLAN.md), so every value was chosen against the full inventory
+of real UI: two forms, a table, alerts, badges, disabled states.
 
 ### Tokens are named by role, not by value
 
 `bg-surface`, `text-muted`, `border-line` — never `bg-white`, `text-gray-500`.
 A palette change then never means renaming class names in components.
 
-### Dark mode redefines variables instead of using `dark:` classes
+### One light theme, no dark mode
 
-Tailwind compiles `bg-surface` to `background-color: var(--color-surface)`, so
-overriding that variable inside `@media (prefers-color-scheme: dark)` re-themes
-the entire app. No component contains a single `dark:` class, which means nothing
-can be left half-themed.
+The brand spec defines a single look — navy rail, light workspace — and
+deriving an unsanctioned dark palette would be guesswork presented as design.
+Because every utility compiles to `var(--color-…)`, a specified dark theme
+would later be a variable override under a media query, touching no component.
 
-- **Rejected — per-element `dark:` variants:** the common approach, but it is two
-  decisions per element and one of them is always missed somewhere.
-- **Cost:** dark mode follows the OS with no in-app toggle. Adding one means a
-  `[data-theme]` selector alongside the media query.
+### Repeated controls are component classes; layout stays utilities
+
+`.field-input`, `.btn`, `.badge`, `.alert` live in one `@layer components`
+block, lifted from the spec's control sections, because the same control
+appears on three screens and its states (focus ring, error border, disabled
+opacity) should be impossible to half-apply. Everything single-use — layout,
+spacing, one-off type — stays as inline utilities where it can be read in
+place.
+
+### Mobile tables scroll sideways instead of stacking into cards
+
+The spec allows stacked cards below 768px. The CSS-only version
+(`display: block` on table elements) destroys table semantics for screen
+readers unless every role is manually restored; duplicated card markup is a
+second render path to keep correct. A scroll container keeps real semantics at
+the cost of a sideways scroll on phones — the honest trade at this scope, and
+the primary action stays visible either way.
+
+### The nav rail is honest about being a shell
+
+Only "Resources" is a real destination. The other rail items render disabled
+with a "not part of this demo" title rather than as live-looking links — a rail
+of one icon would not read as a product shell, but enabled links to nowhere
+would be doors painted on a wall.
 
 ---
 
