@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# The exercise brief stays local; it is not ours to republish
+docs/*.pdf

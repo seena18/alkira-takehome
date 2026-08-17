@@ -17,7 +17,7 @@ Alkira-inspired enterprise design system.
 | Tool | Why |
 |---|---|
 | React 19 + TypeScript (`strict`) | Auth state is a discriminated union — reading a user before MFA passes is a compile error, not a runtime bug |
-| Vite 8 | Instant dev server, one Rollup build, current default toolchain |
+| Vite 8 | Instant dev server; one bundler (Rolldown) for dev and build alike |
 | react-router 7 | Every auth state has a URL; guards live at the route layer |
 | react-hook-form + zod | The schema is the single source of truth for rules *and* types; uncontrolled inputs keep typing render-free |
 | Tailwind v4 | Utility styling over spec-derived design tokens; config lives in CSS |
@@ -26,10 +26,10 @@ Alkira-inspired enterprise design system.
 
 ## Setup
 
-Requires Node 20+.
+Requires Node 20.19+ or 22.12+ (Vite 8's floor).
 
 ```bash
-npm install
+npm ci             # reproducible install from the lockfile
 npm run dev        # http://localhost:5173
 ```
 

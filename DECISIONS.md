@@ -9,18 +9,19 @@ Written as it was built, so the reasoning is the real reasoning.
 
 ### Vite
 
-Native ESM dev server, so startup and HMR do not degrade as the app grows; one
-Rollup config for production. It is also the toolchain the React docs now point
-to.
+Native ESM dev server, so startup and HMR do not degrade as the app grows, and
+as of Vite 8 one bundler — Rolldown, Rollup's Rust successor — serves both dev
+and production, ending the old esbuild-in-dev / Rollup-in-build split. It is
+also the toolchain the React docs now point to.
 
 - **Rejected — Create React App:** deprecated, and it drags in webpack-4-era
   config that has to be explained the moment anything breaks.
 - **Rejected — Next.js:** SSR, API routes, and server components would all go
   unused here. Shipping a server runtime for an app with no server invites a
   question with no good answer.
-- **Cost:** dev uses esbuild and production uses Rollup, so a dev/build
-  divergence is possible. Mitigated by keeping `npm run build` in the
-  verification loop rather than trusting the dev server.
+- **Cost:** Rolldown only became the default in v8, so its plugin-ecosystem
+  edges are younger than the Rollup years'. Mitigated by keeping
+  `npm run build` in the verification loop rather than trusting the dev server.
 
 ### TypeScript, with `strict` on
 
