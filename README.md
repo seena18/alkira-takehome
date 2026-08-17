@@ -124,8 +124,8 @@ defend any line in the repo.
 
 ## Demo
 
-*Demo video link goes here.*
+**▶ [Watch the demo (~3 min)](https://youtu.be/Xi3OWhspCN4)**
 
-Script: the viewer journey (validation errors → login → wrong-then-right MFA
-code → read-only connectors), the editor journey (add, rename, delete), one
-refresh to show deliberate session loss, and how to run locally.
+It covers a fresh `git clone` to a running app, validation and error handling,
+the viewer journey (login → MFA → read-only connectors), the editor journey
+(add, rename, delete), and the deliberate session loss on refresh.
